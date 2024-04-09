@@ -3,14 +3,76 @@ const cors = require('cors');
 const morgan = require('morgan');
 const app = express();
 const port = process.env.PORT || 3008;
+const { Sequelize, DataTypes } = require("sequelize");
 
 app.use(morgan('dev'));
 app.use (cors());
 app.use(express.json());
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    });
+const sequelize = new Sequelize({
+  dialect: "mysql",
+  host: "localhost",
+  username: "root",
+  password: "1234",
+  database: "prueba_db",
+});
+
+// Entity class for dynamic table creation
+class Entity {
+  constructor(name, fields) {
+    this.name = name;
+    this.model = sequelize.define(name, fields);
+  }
+
+  async sync() {
+    await this.model.sync({ force: true });
+    console.log(`Table for ${this.name} synchronized`);
+  }
+}
+
+// Define a simple schema for the User entity
+const userSchema = {
+  user_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false,
+  },
+  user_email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  user_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  user_last_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  user_password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+};
+
+// Create User entity using the schema
+const User = new Entity("User", userSchema);
+
+sequelize
+.sync()
+.then(async() => {
+  await User.sync();
+})
+.catch((error) => {
+  console.error("Error synchinizing database ", error);
+});
+
+
 
 const user = {
   name: 'John',
@@ -26,3 +88,6 @@ app.post('/user', (req, res) => {
   res.send(user);
 }); 
 
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+  });
