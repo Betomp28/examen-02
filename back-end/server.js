@@ -60,18 +60,55 @@ const userSchema = {
   },
 };
 
+const noteSchema = {
+  user_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+    allowNull: false,
+  },
+  user_email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  user_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  user_last_name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  user_password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+};
+
+
+
+
 // Create User entity using the schema
 const User = new Entity("User", userSchema);
+const Note = new Entity("Note", noteSchema);
 
-sequelize
-.sync()
-.then(async() => {
-  await User.sync();
-})
-.catch((error) => {
-  console.error("Error synchinizing database ", error);
-});
+const syncronizeDB = () => {
+  sequelize
+    .sync()
+    .then(async () => {
+      await User.sync();
+      await Note.sync();
+    })
+    .catch((error) => {
+      console.error("Error synchronizing database:", error);
+    });
+};
 
+syncronizeDB();
 
 
 const user = {
@@ -88,6 +125,31 @@ app.post('/user', (req, res) => {
   res.send(user);
 }); 
 
+app.post('/login', async (req, res) => {
+  try {
+    const { user_email, user_password } = req.body;
+    console.log("req.body");
+    console.log(req.body);
+    const user = await User.model.findOne({
+      where: {
+        user_email,
+        user_password,
+      }
+    });
+
+    if (user) {
+      res.status(200).json({ message: 'Login successful', user: user });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+  } catch (error) {
+    
+    console.error('Error during login:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`); 
   });

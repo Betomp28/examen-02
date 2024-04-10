@@ -1,28 +1,37 @@
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-
 import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
 import  axios  from 'axios';
+
 
 const Login = () => {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
+  
+  
 
-  const handleSubmit = () => {
+  const handleSumbit = async () => {
+    console.log("handleSumbit");
     console.log(user);
     console.log(password);
-    
-    axios.post('http://localhost:3008/user', { // con esto llamamos un api
-      user, 
-      password,
-    })
+
+    try {
+      const response = await axios.post("http://localhost:3008/login", {
+        user_email: user,
+        user_password: password,
+      });
+      console.log(response);
+      
+    } catch (e) {
+      alert("Invalid credentials");
+    }
+  };
    
-    };
+    
    return (
       <div >
         <Card sx={{ maxWidth: 345,margin: "auto" }}>
@@ -52,7 +61,7 @@ const Login = () => {
         variant="outlined" />
         <br />
         <br />
-        <Button onClick={handleSubmit} variant="contained">Ingresar</Button>
+        <Button onClick={handleSumbit} variant="contained">Ingresar</Button>
       </div>
     );
   };
