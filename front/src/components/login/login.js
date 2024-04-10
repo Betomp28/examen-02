@@ -6,11 +6,13 @@ import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import  axios  from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 const Login = () => {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   
   
 
@@ -25,6 +27,8 @@ const Login = () => {
         user_password: password,
       });
       console.log(response);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      navigate("/notes"); // redirigir a la pági
       
     } catch (e) {
       alert("Invalid credentials");

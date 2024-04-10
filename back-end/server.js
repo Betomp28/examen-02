@@ -108,7 +108,7 @@ const syncronizeDB = () => {
     });
 };
 
-syncronizeDB();
+//syncronizeDB();
 
 
 const user = {
