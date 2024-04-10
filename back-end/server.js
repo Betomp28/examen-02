@@ -132,8 +132,8 @@ app.post('/login', async (req, res) => {
     console.log(req.body);
     const user = await User.model.findOne({
       where: {
-        user_email,
-        user_password,
+        user_email: user_email,
+        user_password: user_password ,
       }
     });
 
@@ -149,6 +149,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`); 
