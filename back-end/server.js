@@ -150,6 +150,27 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post("/register", async (req, res) => {
+  try {
+    const { user_email, user_name, user_last_name, user_password } = req.body;
+    console.log("req.body");
+    console.log(req.body);
+
+    const user = await User.model.create({
+      user_email,
+      user_name,
+      user_last_name,
+      user_password,
+    });
+
+    res.status(201).json({ message: "User created", user });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`); 
