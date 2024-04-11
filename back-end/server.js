@@ -170,6 +170,30 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.get("/users", async (req, res) => { 
+  try {
+    const users = await User.model.findAll();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete("/user/:user_id", async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    await User.model.destroy({
+      where: {
+        user_id: user_id,
+      },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 app.listen(port, () => {
